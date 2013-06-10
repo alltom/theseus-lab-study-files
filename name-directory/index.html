@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<title>Company Directory</title>
+
+<script src="jquery-1.7.js?prebug=no"></script>
+<script>
+(function () {
+    'use strict';
+    var resultsDiv;
+    var spinnerDiv;
+    
+    var searchUrl = "http://127.0.0.1:3000/search";
+    
+    var search = function (term, callback) {
+        $.getJSON(searchUrl, {s: term}, function () {
+            callback.apply(this, arguments);
+        });
+    };
+    
+    var hideSpinner = function () {
+        spinnerDiv.hide();
+    };
+    
+    var term = "";
+    var keyPressed = function () {
+        if ($(this).val() !== term) {
+            var thisTerm, i;
+            term = $(this).val();
+    
+            if (term.length > 0) {
+                spinnerDiv.show();
+                resultsDiv.empty();
+                search(term, function (results) {
+                    if (term === thisTerm) {
+                        hideSpinner();
+                        for (i = 0; i < results.length; i++) {
+                            $("<li />").appendTo(resultsDiv).text(results[i]);
+                        }
+                    }
+                });
+            } else {
+                resultsDiv.empty();
+            }
+        }
+    };
+    
+    $(function () {
+        $("body").append("Search: ");
+        var textbox = $("<input />").appendTo("body");
+        textbox.on('keyup', keyPressed);
+        textbox.focus();
+    
+        spinnerDiv = $("<div />").appendTo("body").html("<img src='spinner.gif' />").hide();
+    
+        resultsDiv = $("<div />").appendTo("body");
+    });
+}());
+</script>
+</head>
+<body>
+</body>
+</html>
